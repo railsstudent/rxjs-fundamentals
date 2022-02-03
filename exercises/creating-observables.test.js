@@ -18,13 +18,12 @@ describe('Exercise: Creating Observables', () => {
     it('should take a series of objects as arguments and create an observable', () => {
       const result = [];
 
-      of({ type: 'INCREMENT', payload: 1 }).subscribe(value => result.push(value))
-
-      of({ type: 'RESET' }).subscribe(value => result.push(value))
-
-      of({ type: 'INCREMENT', payload: 2 }).subscribe(value => result.push(value))
-
-      of({ type: 'DECREMENT', payload: 1 }).subscribe(value => result.push(value))
+      of ( 
+        { type: 'INCREMENT', payload: 1 },
+        { type: 'RESET' },
+        { type: 'INCREMENT', payload: 2 },
+        { type: 'DECREMENT', payload: 1 })
+      .subscribe(value => result.push(value))
 
       expect(result).toEqual([
         { type: 'INCREMENT', payload: 1 },
