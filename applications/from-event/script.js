@@ -22,3 +22,6 @@ const addMessageToDOM = () => {
  * - Use `addMessageToDOM` to add a useless message to the DOM whenever the
  *   stream emits a value.
  */
+
+const observable$ = fromEvent(button, 'click')
+observable$.subscribe(() => addMessageToDOM())
