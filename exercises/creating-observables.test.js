@@ -87,10 +87,11 @@ describe('Exercise: Creating Observables', () => {
 
       from(promise).subscribe({
         next: (value) => result.push(value),
-        complete: () =>  expect(result).toEqual([1])
+        complete: () =>  { 
+          expect(result).toEqual([1]);
+          done();
+        }
       })
-
-      done();
     });
 
     /**
@@ -102,10 +103,11 @@ describe('Exercise: Creating Observables', () => {
       const promise = Promise.reject({ error: 'Something terrible happened' });
 
       from(promise).subscribe({
-        error: (error) => expect(error).toEqual({ error: 'Something terrible happened' })
+        error: (error) => { 
+          expect(error).toEqual({ error: 'Something terrible happened' });
+          done();
+        }
       })
-
-      done();
     });
   });
 });
