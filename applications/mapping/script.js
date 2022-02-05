@@ -1,5 +1,5 @@
 import { of, from, interval, fromEvent, merge, NEVER } from 'rxjs';
-import { pluck, concatMap, take, map } from 'rxjs/operators';
+import { pluck, concatMap, mergeMap, take, map, switchMap, exhaustMap } from 'rxjs/operators';
 
 import {
   getCharacter,
@@ -9,6 +9,9 @@ import {
   setStatus,
 } from './utilities';
 
-const character$ = from(getCharacter(1)).pipe(pluck('name'));
+const character$ = of(1, 2, 3, 4).pipe(
+  concatMap(n => getCharacter(n)),
+  pluck('name')
+);
 
 character$.subscribe(render);
