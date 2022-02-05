@@ -41,8 +41,8 @@ const withChaos = (request, response, next) => {
   if (chaos) delay = (delay + 1) * Math.random() + 1000;
 
   if (flakiness && Date.now() % flakiness === 0) {
-    response.status(500);
-    return response.json({ error: 'Something went wrong.' });
+    return response.status(500).send(new Error('Something went wrong.'))
+    // return response.json({ error: 'Something went wrong.' });
   }
 
   setTimeout(next, delay);

@@ -21,4 +21,36 @@ import {
   setError,
 } from './utilities';
 
-const endpoint = 'http://localhost:3333/api/facts';
+const endpoint = 'http://localhost:3333/api/facts?count=3&delay=1000&chaos=true&flakiness=2';
+
+const fetchFacts$ = fromEvent(fetchButton, 'click')
+  .pipe(
+    exhaustMap(() => {
+      return fromFetch(endpoint)
+        .pipe(
+          mergeMap(response => {
+            if (response.ok) {
+              return response.json()
+            }
+            throw new Error(response.statusText);
+          }),
+          retry(4),
+          catchError((err) => {
+            console.warn(err)
+            return of({ error: err.message })
+          })
+        )
+    }),
+    tap(console.log)
+  )
+
+
+fetchFacts$.subscribe(({ error, facts }) => {
+  if (error) {
+    return setError(error)
+  }
+
+  clearError()
+  clearFacts()
+  return addFacts({ facts })
+})
