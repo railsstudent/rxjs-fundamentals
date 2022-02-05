@@ -22,6 +22,7 @@ const outputs = {
   first: document.getElementById('first-output'),
   second: document.getElementById('second-output'),
   combined: document.getElementById('combined-output'),
+  third: document.getElementById('third-output'),
 };
 
 export const setStatus = (isRunning) => {
@@ -68,16 +69,17 @@ const withMetadata = (target) => (metadata) => {
   return { target, metadata };
 };
 
-export const bootstrap = ({ first$, second$, combined$ }) => {
+export const bootstrap = ({ first$, second$, third$, combined$ }) => {
   const first = first$.pipe(map(withMetadata('first')));
   const second = second$.pipe(map(withMetadata('second')));
   const combined = combined$.pipe(map(withMetadata('combined')));
+  const third = third$.pipe(map(withMetadata('third')));
 
   const run$ = merge(start$, pause$).pipe(
     startWith(false),
     switchMap((isRunning) =>
       isRunning
-        ? merge(first, second, combined).pipe(finalize(() => setStatus(false)))
+        ? merge(first, second, third, combined).pipe(finalize(() => setStatus(false)))
         : NEVER,
     ),
     tap(addToOutput),
