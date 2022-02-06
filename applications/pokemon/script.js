@@ -78,7 +78,7 @@ const searchPokemons = (searchTerm) =>
     )
 
 const getPokemonDetails = (id) => 
-  fromFetch(endpoint + id)
+  fromFetch(endpointFor(id))
     .pipe(
       mergeMap((response) => {
         if (response.ok) {
@@ -97,20 +97,26 @@ const getPokemonDetails = (id) =>
 
 const search$ = fromEvent(form, 'submit')
   .pipe(
+    debounceTime(300),
     map(() => search.value),
-    switchMap(searchPokemons),
-    pluck('pokemon'),
-    mergeMap(pokemons => pokemons),
-    take(1),
-    switchMap(pokemon => {
-      const pokemon$ = of(pokemon)
-      const data$ = getPokemonDetails(pokemon.id)
-        .pipe(map(data => ({
-            ...pokemon, 
-            data
-          })
-        ))
-      return merge(pokemon$, data$)
+    distinctUntilChanged(),
+    switchMap((searchTerm) => {
+      return searchPokemons(searchTerm)
+        .pipe(
+          pluck('pokemon'),
+          mergeMap(pokemons => pokemons),
+          take(1),  
+          switchMap(pokemon => {
+            const pokemon$ = of(pokemon)
+            const data$ = getPokemonDetails(pokemon.id)
+              .pipe(map(data => ({
+                  ...pokemon, 
+                  data
+                })
+              ))
+            return merge(pokemon$, data$)
+          }),            
+        )
     }),
     tap(renderPokemon)
   )
